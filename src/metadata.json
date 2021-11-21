@@ -1,0 +1,12 @@
+{
+  "name": "Crypto Kit",
+  "description": "Display live crypto portfolio balances.",
+  "uuid": "cryptokit@d0x2f.github.com",
+  "settings-schema": "org.gnome.shell.extensions.cryptokit",
+  "gettext-domain": "cryptokit",
+  "extension-id": "cryptokit",
+  "shell-version": [
+    "41"
+  ],
+  "version": 1
+}
