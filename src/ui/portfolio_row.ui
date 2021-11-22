@@ -10,7 +10,7 @@
         <property name="can-focus">True</property>
         <property name="orientation">horizontal</property>
         <child>
-          <object class="GtkDropDown" id="asset_input">
+          <object class="GtkDropDown" id="symbol_input">
             <property name="visible">True</property>
             <property name="can-focus">True</property>
             <property name="enable-search">True</property>

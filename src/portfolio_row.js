@@ -21,14 +21,14 @@ function getSymbolListStore() {
 /**
  * Packs the portfolio array into appropriate GVariants objects for storage in Gio.Settings.
  *
- * @param {Array} portfolio An array of portfolio tuples (asset, qty)
+ * @param {Array} portfolio An array of portfolio tuples (symbol, qty)
  */
 function packPortfolio(portfolio) {
     let tuples = [];
-    for (const [asset, qty] of portfolio) {
+    for (const [symbol, qty] of portfolio) {
         tuples.push(
             GLib.Variant.new_tuple([
-                GLib.Variant.new_string(asset),
+                GLib.Variant.new_string(symbol),
                 GLib.Variant.new_double(qty),
             ])
         );
@@ -50,7 +50,7 @@ var PortfolioRow = GObject.registerClass(
           this.qty = qty;
       }
 
-      assetChanged(dropDown) {
+      symbolChanged(dropDown) {
           const portfolio = settings.get_value('portfolio').deep_unpack();
           portfolio[this.index][0] = SYMBOLS[dropDown.selected];
           settings.set_value('portfolio', packPortfolio(portfolio));
@@ -67,13 +67,12 @@ var PortfolioRow = GObject.registerClass(
       }
 
       _buildRow() {
-          log('build row');
-          const builder = Gtk.Builder.new_from_file(`${CryptoKit.path}/ui/asset_row.ui`);
+          const builder = Gtk.Builder.new_from_file(`${CryptoKit.path}/ui/portfolio_row.ui`);
 
-          const assetInput = builder.get_object('asset_input');
-          assetInput.set_model(getSymbolListStore());
-          assetInput.set_selected(SYMBOLS.indexOf(this.symbol));
-          assetInput.connect('notify::selected', this.assetChanged.bind(this));
+          const symbolInput = builder.get_object('symbol_input');
+          symbolInput.set_model(getSymbolListStore());
+          symbolInput.set_selected(SYMBOLS.indexOf(this.symbol));
+          symbolInput.connect('notify::selected', this.symbolChanged.bind(this));
 
           const qtyInput = builder.get_object('qty_input');
           const qtyAdjustment = builder.get_object('qty_adjustment');

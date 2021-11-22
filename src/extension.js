@@ -97,7 +97,7 @@ class Extension {
     }
 
     refreshRefreshInterval() {
-        this.b.configureRefreshInterval(this.settings.get_string('refresh-interval'));
+        this.binance.configureRefreshInterval(this.settings.get_string('refresh-interval'));
     }
 
     refreshPrecision() {
