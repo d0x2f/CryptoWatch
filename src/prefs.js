@@ -1,131 +1,15 @@
-const {GObject, Gtk, Gio, GLib} = imports.gi;
+/* exported init, buildPrefsWidget */
+
+const {Gtk, Gio} = imports.gi;
 const {gettext: _, initTranslations, getCurrentExtension, getSettings} = imports.misc.extensionUtils;
 
 const CryptoKit = getCurrentExtension();
-const {BinanceHTTP} = CryptoKit.imports.binance_http;
+const {PortfolioRow} = CryptoKit.imports.portfolio_row;
 
 const GETTEXT_DOMAIN = 'cryptokit';
 
-let symbolListStore, symbolListItemFactory;
-
-/**
- * Get symbol store singleton.
- */
-function getSymbolListStore() {
-    if (symbolListStore)
-        return symbolListStore;
-
-    const symbols = BinanceHTTP.fetchSymbols();
-    symbolListStore = Gtk.StringList.new(symbols);
-    return symbolListStore;
-}
-
-/**
- *  Get symbol list item factory singleton.
- */
-function getSymbolListItemFactory() {
-    if (symbolListItemFactory)
-        return symbolListItemFactory;
-
-    let uiXml = GLib.file_get_contents(`${CryptoKit.path}/ui/symbol_list_item.ui`)[1];
-    symbolListItemFactory = Gtk.BuilderListItemFactory.new_from_bytes(null, uiXml);
-    return symbolListItemFactory;
-}
-
-const PortfolioListRow = GObject.registerClass(
-    class PortfolioListRow extends GObject.Object {
-        _init([symbol, qty]) {
-            super._init();
-
-            this.symbol = symbol;
-            this.qty = qty;
-
-            // this.settings = getSettings('org.gnome.shell.extensions.cryptokit');
-        }
-
-        static buildRow(row) {
-            return row._buildRow();
-        }
-
-        _buildRow() {
-            const builder = Gtk.Builder.new_from_file(`${CryptoKit.path}/ui/asset_row.ui`);
-
-            const assetInput = builder.get_object('asset_input');
-            // assetInput.set_factory(getSymbolListItemFactory());
-            assetInput.set_model(getSymbolListStore());
-
-            this.qtyInput = builder.get_object('qty_input');
-            this.qtyAdjustment = builder.get_object('qty_adjustment');
-            this.qtyInput.connect('output', this.formatQty.bind(this));
-            this.qtyInput.value = this.qty;
-
-            return builder.get_object('row');
-        }
-
-        formatQty() {
-            const formatter = new Intl.NumberFormat(
-                undefined,
-                {
-                    minimumFractionDigits: 0,
-                    maximumFractionDigits: 8,
-                    style: 'decimal',
-                }
-            );
-
-            const value = this.qtyAdjustment.get_value();
-            this.qtyInput.set_text(formatter.format(value));
-
-            return true;
-        }
-    }
-);
-
-const Preferences = GObject.registerClass(
-    class Preferences extends Gtk.ScrolledWindow {
-        _init() {
-            super._init();
-
-            this.settings = getSettings('org.gnome.shell.extensions.cryptokit');
-            this.settings.connect('changed::portfolio', this.refreshPortfolio.bind(this));
-
-            const builder = Gtk.Builder.new_from_file(`${CryptoKit.path}/ui/prefs.ui`);
-
-            this.set_child(builder.get_object('topbox'));
-
-            const refreshIntervalInput = builder.get_object('refresh_interval_input');
-            this.settings.bind(
-                'refresh-interval',
-                refreshIntervalInput,
-                'active_id',
-                Gio.SettingsBindFlags.DEFAULT
-            );
-
-            const precisionInput = builder.get_object('precision_input');
-            this.settings.bind(
-                'precision',
-                precisionInput,
-                'value',
-                Gio.SettingsBindFlags.DEFAULT
-            );
-
-            const portfolioList = builder.get_object('portfolio_list');
-            this.portfolioStore = new Gio.ListStore();
-            portfolioList.bind_model(this.portfolioStore, PortfolioListRow.buildRow);
-            this.refreshPortfolio();
-
-            this.connect('destroy', () => this._settings.run_dispose());
-        }
-
-        refreshPortfolio() {
-            const portfolio = this.settings.get_value('portfolio')
-                .deep_unpack()
-                .map(asset => new PortfolioListRow(asset));
-            this.portfolioStore.remove_all();
-            portfolio.map(row => this.portfolioStore.append(row));
-        }
-    }
-);
-
+const settings = getSettings('org.gnome.shell.extensions.cryptokit');
+const portfolioStore = new Gio.ListStore();
 
 /**
  *
@@ -135,8 +19,48 @@ function init() {
 }
 
 /**
- *
+ * When the portfolio changes in Gio.Settings, reflect those changes in the store.
+ */
+function refreshPortfolio() {
+    const portfolio = settings.get_value('portfolio').deep_unpack();
+    for (const [index, row] of portfolio.entries()) {
+        const item = portfolioStore.get_item(index);
+        if (item !== null)
+            item.update(row);
+        else
+            portfolioStore.append(new PortfolioRow(index, row));
+    }
+}
+
+/**
+ * Create the preferences window.
  */
 function buildPrefsWidget() {
-    return new Preferences();
+    settings.connect('changed::portfolio', refreshPortfolio);
+
+    const builder = Gtk.Builder.new_from_file(`${CryptoKit.path}/ui/prefs.ui`);
+
+    const refreshIntervalInput = builder.get_object('refresh_interval_input');
+    settings.bind(
+        'refresh-interval',
+        refreshIntervalInput,
+        'active_id',
+        Gio.SettingsBindFlags.DEFAULT
+    );
+
+    const precisionInput = builder.get_object('precision_input');
+    settings.bind(
+        'precision',
+        precisionInput,
+        'value',
+        Gio.SettingsBindFlags.DEFAULT
+    );
+
+    const portfolioList = builder.get_object('portfolio_list');
+    portfolioList.bind_model(portfolioStore, PortfolioRow.buildRow);
+    refreshPortfolio();
+
+    const window = builder.get_object('window');
+    window.connect('destroy', () => settings.run_dispose());
+    return window;
 }

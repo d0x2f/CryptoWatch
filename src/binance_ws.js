@@ -7,9 +7,9 @@ const CryptoKit = ExtensionUtils.getCurrentExtension();
 var BinanceWS = class BinanceWS {
     constructor(symbols, interval) {
         this.latestTicks = {};
-        this.subscribedSymbols = symbols.map(s => s.toLowerCase());
+        this.symbols = symbols.map(s => s.toLowerCase());
         this.requestIdCounter = 0;
-        this.dataInitialised = false;
+        this.initialised = false;
         this.connectSocket();
 
         this.configureRefreshInterval(interval);
@@ -55,11 +55,17 @@ var BinanceWS = class BinanceWS {
     }
 
     subscribeToStreams() {
-        const streams = this.subscribedSymbols.map(symbol => `${symbol}usdt@miniTicker`);
+        // TODO: Unsubscribe from previous streams
+        const streams = this.symbols.map(symbol => `${symbol}usdt@miniTicker`);
 
         const requestId = this.requestIdCounter++;
         this.ws.send_text(JSON.stringify({method: 'SUBSCRIBE', params: streams, id: requestId}));
         // TODO: Check for successful response
+    }
+
+    setSymbols(symbols) {
+        this.symbols = symbols.map(s => s.toLowerCase());
+        this.subscribeToStreams();
     }
 
     parseMessage(message) {
@@ -79,7 +85,7 @@ var BinanceWS = class BinanceWS {
         if (tickerData === null)
             return;
         this.latestTicks[tickerData.symbol] = tickerData;
-        this.dataInitialised = true;
+        this.initialised = true;
     }
 
     configureRefreshInterval(interval) {
@@ -89,7 +95,7 @@ var BinanceWS = class BinanceWS {
         }
 
         this.intervalHandle = GLib.timeout_add(GLib.PRIORITY_DEFAULT, parseInt(interval), () => {
-            if (this.dataInitialised)
+            if (this.initialised)
                 this.emit('update', this.latestTicks);
 
             if (this.ws?.get_state() === Soup.WebsocketState.CLOSED)
