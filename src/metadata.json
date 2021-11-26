@@ -1,11 +1,13 @@
 {
   "name": "CryptoWatch",
   "description": "Display live crypto portfolio balances.",
+  "url": "https://github.com/d0x2f/CryptoWatch",
   "uuid": "cryptowatch@d0x2f.github.com",
   "settings-schema": "org.gnome.shell.extensions.cryptowatch",
   "gettext-domain": "cryptowatch",
   "extension-id": "cryptowatch",
   "shell-version": [
+    "40",
     "41"
   ],
   "version": 1

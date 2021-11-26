@@ -7,7 +7,7 @@
     "lint:fix": "eslint --fix src/"
   },
   "author": "https://github.com/d0x2f",
-  "license": "ISC",
+  "license": "GPL-3.0-or-later",
   "dependencies": {
     "eslint": "^8.2.0",
     "eslint-plugin-jsdoc": "^37.0.3"

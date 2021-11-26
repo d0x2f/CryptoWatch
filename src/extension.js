@@ -105,6 +105,7 @@ class Extension {
         this.refreshPortfolio();
         this.refreshPrecision();
         this.refreshCurrency();
+
         this.coincap = new CoincapAssetWS(
             this.portfolio.map(([assetId]) => assetId)
         );
@@ -127,7 +128,7 @@ class Extension {
     }
 
     refreshPrecision() {
-        this.indicator.setPrecision(this.settings.get_int('precision'));
+        this.indicator?.setPrecision(this.settings.get_int('precision'));
     }
 
     refreshPortfolio() {

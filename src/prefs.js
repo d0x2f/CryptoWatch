@@ -21,11 +21,6 @@ let ratePromise; // Supported conversion currencies
  */
 function init() {
     initTranslations(App.metadata['gettext-domain']);
-    settings = getSettings(App.metadata['settings-schema']);
-    portfolioStore = new Gio.ListStore();
-    currencyStore = new Gio.ListStore();
-    assetsPromise = fetchAssets();
-    ratePromise = fetchRates();
 }
 
 /**
@@ -63,6 +58,13 @@ function addAsset(assets) {
  * Create the preferences window.
  */
 function buildPrefsWidget() {
+    settings = getSettings(App.metadata['settings-schema']);
+
+    portfolioStore = new Gio.ListStore();
+    currencyStore = new Gio.ListStore();
+    assetsPromise = fetchAssets();
+    ratePromise = fetchRates();
+
     const builder = Gtk.Builder.new_from_file(`${App.path}/ui/prefs.ui`);
 
     const refreshIntervalInput = builder.get_object('refresh_interval_input');
