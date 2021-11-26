@@ -1,7 +1,17 @@
-/* exported packPortfolio, setTimeout, sleep, jsonRequest, normaliseCurrencySymbol */
+/* exported packPortfolio, setTimeout, sleep, jsonRequest, normaliseCurrencySymbol, _log */
 
 imports.gi.versions.Soup = '2.4';
 const {GLib, Soup} = imports.gi;
+const ExtensionUtils = imports.misc.extensionUtils;
+
+const App = ExtensionUtils.getCurrentExtension();
+
+/**
+ * @param {string} message The message to log.
+ */
+function _log(message) {
+    log(`${App.metadata.name}: ${message}`);
+}
 
 /**
  * Takes a string and trims/pads it to 3 characters.
@@ -71,7 +81,7 @@ async function jsonRequest(url) {
         do {
             session.send_message(message);
             if (message.status_code === 429) {
-                log('rate limited, sleeping 5s');
+                _log('rate limited, sleeping 5s');
                 await sleep(5000);
             }
         } while (message.status_code === 429);

@@ -7,7 +7,7 @@ const ExtensionUtils = imports.misc.extensionUtils;
 
 const App = ExtensionUtils.getCurrentExtension();
 
-const {jsonRequest} = App.imports.utils;
+const {jsonRequest, setTimeout, _log} = App.imports.utils;
 
 let _assets, _rates;
 
@@ -59,7 +59,7 @@ var CoincapAssetWS = class CoincapAssetWS {
     }
 
     reconnectSocket() {
-        log(`Watching assets: ${this.assets.join(',')}`);
+        _log(`Connecting socket to watch assets: ${this.assets.join(',')}`);
 
         if (this.ws?.get_state() === Soup.WebsocketState.OPEN)
             this.ws.close(0, '');
@@ -81,12 +81,30 @@ var CoincapAssetWS = class CoincapAssetWS {
                     this.ws.keepalive_interval = 1;
 
                     this.ws.connect('error', (_self, e) => logError(e));
-                    this.ws.connect('closed', () => log('Websocket disconnected'));
+                    this.ws.connect('closed', this.handleDisconnect.bind(this));
                     this.ws.connect('message', this.processMessage.bind(this));
                 } catch (e) {
                     logError(e);
                 }
             }
+        );
+    }
+
+    /**
+     *  Wait 5 seconds, if the socket is still closed, then try to reconnect.
+     */
+    handleDisconnect() {
+        _log('Socket disconnected, waiting 5 seconds before retrying socket.');
+        setTimeout(
+            () => {
+                if (this.ws?.get_state() === Soup.WebsocketState.OPEN) {
+                    _log('Socket connected, no need to reconnect.');
+                    return;
+                }
+
+                this.reconnectSocket();
+            },
+            5000
         );
     }
 

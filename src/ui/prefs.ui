@@ -13,7 +13,7 @@
           <object class="GtkLabel">
             <property name="hexpand">True</property>
             <property name="xalign">0.5</property>
-            <property name="label">Loading...</property>
+            <property name="label" translatable="yes">Loading...</property>
             <attributes>
               <attribute name="weight" value="bold" />
             </attributes>
@@ -24,7 +24,7 @@
             <property name="halign">center</property>
             <property name="vexpand">True</property>
             <property name="xalign">0.5</property>
-            <property name="label">Please wait while available asset and exchange rate data is fetched from coincap.io.</property>
+            <property name="label" translatable="yes">Please wait while available asset and exchange rate data is fetched from coincap.io.</property>
           </object>
         </child>
       </object>
