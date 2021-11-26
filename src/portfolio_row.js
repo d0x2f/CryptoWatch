@@ -1,90 +1,31 @@
 /* exported PortfolioRow */
 
-const {GObject, Gtk, GLib} = imports.gi;
-const {gettext: _, getCurrentExtension, getSettings} = imports.misc.extensionUtils;
+const {GObject, Gtk} = imports.gi;
+const {getCurrentExtension, getSettings} = imports.misc.extensionUtils;
 
-const CryptoKit = getCurrentExtension();
-const {fetchSymbols} = CryptoKit.imports.binance_http;
+const App = getCurrentExtension();
+const {normaliseCurrencySymbol} = App.imports.utils;
+const {USD_RATE} = App.imports.globals;
+const {buildModifyAssetModal} = App.imports.modify_asset_modal;
 
-const settings = getSettings('org.gnome.shell.extensions.cryptokit');
-let symbolListStore;
-
-const SYMBOLS = fetchSymbols();
-
-/**
- * Get symbol store singleton.
- */
-function getSymbolListStore() {
-    return symbolListStore ?? Gtk.StringList.new(SYMBOLS);
-}
-
-/**
- * Packs the portfolio array into appropriate GVariants objects for storage in Gio.Settings.
- *
- * @param {Array} portfolio An array of portfolio tuples (symbol, qty)
- */
-function packPortfolio(portfolio) {
-    let tuples = [];
-    for (const [symbol, qty] of portfolio) {
-        tuples.push(
-            GLib.Variant.new_tuple([
-                GLib.Variant.new_string(symbol),
-                GLib.Variant.new_double(qty),
-            ])
-        );
-    }
-    return GLib.Variant.new_array(GLib.VariantType.new('(sd)'), tuples);
-}
+const settings = getSettings(App.metadata['settings-schema']);
 
 var PortfolioRow = GObject.registerClass(
   class PortfolioRow extends GObject.Object {
-      _init(index, [symbol, qty]) {
+      _init(index, [id, qty], assets, rates) {
           super._init();
           this.index = index;
-          this.symbol = symbol;
+          this.id = id;
           this.qty = qty;
-      }
 
-      update([symbol, qty]) {
-          this.symbol = symbol;
-          this.qty = qty;
-      }
+          this.assets = assets;
+          this.asset = this.assets[this.id];
 
-      symbolChanged(dropDown) {
-          const portfolio = settings.get_value('portfolio').deep_unpack();
-          portfolio[this.index][0] = SYMBOLS[dropDown.selected];
-          settings.set_value('portfolio', packPortfolio(portfolio));
-      }
+          const currencyId = settings.get_string('currency');
+          this.rates = rates;
+          this.rate = this.rates[currencyId];
 
-      qtyChanged(adjustment) {
-          const portfolio = settings.get_value('portfolio').deep_unpack();
-          portfolio[this.index][1] = adjustment.get_value();
-          settings.set_value('portfolio', packPortfolio(portfolio));
-      }
-
-      static buildRow(row) {
-          return row._buildRow();
-      }
-
-      _buildRow() {
-          const builder = Gtk.Builder.new_from_file(`${CryptoKit.path}/ui/portfolio_row.ui`);
-
-          const symbolInput = builder.get_object('symbol_input');
-          symbolInput.set_model(getSymbolListStore());
-          symbolInput.set_selected(SYMBOLS.indexOf(this.symbol));
-          symbolInput.connect('notify::selected', this.symbolChanged.bind(this));
-
-          const qtyInput = builder.get_object('qty_input');
-          const qtyAdjustment = builder.get_object('qty_adjustment');
-          qtyInput.connect('output', this.formatQty.bind(this));
-          qtyAdjustment.connect('value-changed', this.qtyChanged.bind(this));
-          qtyInput.value = this.qty;
-
-          return builder.get_object('row');
-      }
-
-      formatQty(qtyInput) {
-          const formatter = new Intl.NumberFormat(
+          this.qtyFormatter = new Intl.NumberFormat(
               undefined,
               {
                   minimumFractionDigits: 0,
@@ -92,14 +33,54 @@ var PortfolioRow = GObject.registerClass(
                   style: 'decimal',
               }
           );
+      }
 
-          qtyInput.set_text(
-              formatter.format(
-                  qtyInput.get_adjustment().get_value()
-              )
+      activated() {
+          buildModifyAssetModal(this, this.assets);
+      }
+
+      update([id, qty]) {
+          this.id = id;
+          this.qty = qty;
+          this.populateLabels();
+      }
+
+      buildRow() {
+          this.builder = Gtk.Builder.new_from_file(`${App.path}/ui/portfolio_row.ui`);
+          settings.connect('changed::currency', this.populateLabels.bind(this));
+          this.populateLabels();
+          return this.builder.get_object('row');
+      }
+
+      populateLabels() {
+          if (!this.builder)
+              return;
+
+          const currencyId = settings.get_string('currency');
+          const rate = this.rates[currencyId] ?? USD_RATE;
+          const currencyFormatter = new Intl.NumberFormat(
+              undefined,
+              {
+                  minimumFractionDigits: 0,
+                  maximumFractionDigits: 2,
+                  style: 'currency',
+                  currency: normaliseCurrencySymbol(rate.symbol),
+              }
+          );
+          const conversionRate = rate.rateUsd;
+
+          this.builder.get_object('asset_label').set_label(this.asset.name);
+          this.builder.get_object('symbol_label').set_label(this.asset.symbol);
+
+          this.builder.get_object('price_label').set_label(
+              currencyFormatter.format(parseFloat(this.asset.priceUsd) / conversionRate)
           );
 
-          return true;
+          this.builder.get_object('holding_value_label').set_label(
+              currencyFormatter.format(this.qty * parseFloat(this.asset.priceUsd) / conversionRate)
+          );
+
+          this.builder.get_object('qty_label').set_label(this.qtyFormatter.format(this.qty));
       }
   }
 );

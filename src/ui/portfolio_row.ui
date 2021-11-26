@@ -2,35 +2,71 @@
 <interface>
   <object class="GtkListBoxRow" id="row">
     <property name="selectable">False</property>
-    <property name="activatable">False</property>
+    <property name="activatable">True</property>
     <property name="can-focus">True</property>
     <child>
       <object class="GtkBox">
         <property name="visible">True</property>
         <property name="can-focus">True</property>
         <property name="orientation">horizontal</property>
+        <property name="margin-start">20</property>
+        <property name="margin-end">20</property>
+        <property name="margin-top">20</property>
+        <property name="margin-bottom">20</property>
         <child>
-          <object class="GtkDropDown" id="symbol_input">
+          <object class="GtkBox">
             <property name="visible">True</property>
             <property name="can-focus">True</property>
-            <property name="enable-search">True</property>
+            <property name="orientation">vertical</property>
             <property name="hexpand">True</property>
-            <property name="expression">
-              <lookup name="string" type="GtkStringObject">
-              </lookup>
-            </property>
+            <property name="width-request">150</property>
+            <child>
+              <object class="GtkLabel" id="asset_label">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="xalign">0</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkLabel" id="symbol_label">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="xalign">0</property>
+              </object>
+            </child>
           </object>
         </child>
         <child>
-          <object class="GtkSpinButton" id="qty_input">
+          <object class="GtkLabel" id="price_label">
+            <property name="width-request">150</property>
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+            <property name="hexpand">True</property>
+            <property name="xalign">1.0</property>
+            <property name="yalign">0</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkBox">
+            <property name="width-request">150</property>
             <property name="visible">True</property>
             <property name="can-focus">True</property>
-            <property name="editable">True</property>
-            <property name="numeric">True</property>
-            <property name="value">0</property>
-            <property name="digits">8</property>
-            <property name="climb-rate">1</property>
-            <property name="adjustment">qty_adjustment</property>
+            <property name="orientation">vertical</property>
+            <property name="hexpand">True</property>
+            <child>
+              <object class="GtkLabel" id="holding_value_label">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="xalign">1.0</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkLabel" id="qty_label">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="xalign">1.0</property>
+              </object>
+            </child>
           </object>
         </child>
       </object>
@@ -38,7 +74,7 @@
   </object>
   <object class="GtkAdjustment" id="qty_adjustment">
     <property name="lower">0</property>
-    <property name="upper">1000000000000</property>
+    <property name="upper">100000000000</property>
     <property name="step-increment">1</property>
     <property name="page-increment">1</property>
     <property name="page-size">1</property>

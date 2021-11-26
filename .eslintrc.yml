@@ -91,7 +91,7 @@ rules:
   max-statements-per-line: error
   new-parens: error
   no-array-constructor: error
-  no-await-in-loop: error
+  # no-await-in-loop: error
   no-caller: error
   no-constant-condition:
     - error
@@ -209,7 +209,7 @@ rules:
     - error
     - single
     - avoidEscape: true
-  require-await: error
+  # require-await: error
   rest-spread-spacing: error
   semi:
     - error

@@ -1,7 +1,5 @@
 /* exported init */
 
-const GETTEXT_DOMAIN = 'cryptokit';
-
 const {Clutter, GObject, St} = imports.gi;
 
 const ExtensionUtils = imports.misc.extensionUtils;
@@ -9,15 +7,23 @@ const Main = imports.ui.main;
 const PanelMenu = imports.ui.panelMenu;
 const PopupMenu = imports.ui.popupMenu;
 
-const CryptoKit = ExtensionUtils.getCurrentExtension();
-const {BinanceWS} = CryptoKit.imports.binance_ws;
+const App = ExtensionUtils.getCurrentExtension();
+const {CoincapAssetWS, fetchRates} = App.imports.coincap;
+const {normaliseCurrencySymbol} = App.imports.utils;
+const {USD_RATE} = App.imports.globals;
 
 const _ = ExtensionUtils.gettext;
 
 const Indicator = GObject.registerClass(
     class Indicator extends PanelMenu.Button {
         _init() {
-            super._init(0.0, _('Crypto Kit'));
+            super._init(0.0, _(App.metadata.name));
+
+            this.rate = USD_RATE;
+            this.updateFormatter();
+
+            this.refreshInterval = 0;
+            this.lastUpdate = new Date();
 
             this.label = new St.Label({
                 text: '...',
@@ -37,24 +43,43 @@ const Indicator = GObject.registerClass(
 
         setPrecision(precision) {
             this.precision = precision;
+            this.updateFormatter();
             this.updateLabel();
         }
 
-        updateLabel() {
-            if (!this.value)
-                return;
+        setRate(rate) {
+            this.rate = rate;
+            this.updateFormatter();
+            this.updateLabel();
+        }
 
-            const formatter = new Intl.NumberFormat(
-                undefined, // TODO: Test locale switching
+        setRefreshInterval(refreshInterval) {
+            this.refreshInterval = parseInt(refreshInterval, 10);
+        }
+
+        updateFormatter() {
+            this.formatter = new Intl.NumberFormat(
+                undefined,
                 {
                     minimumFractionDigits: this.precision,
                     maximumFractionDigits: this.precision,
                     style: 'currency',
-                    currency: 'USD',
+                    currency: normaliseCurrencySymbol(this.rate.symbol),
                 }
             );
+        }
 
-            this.label.text = formatter.format(this.value);
+        updateLabel() {
+            if (!this.value) {
+                this.label.text = '...';
+                return;
+            }
+
+            const now = new Date();
+            if (now - this.lastUpdate > this.refreshInterval) {
+                this.label.text = this.formatter.format(this.value / this.rate.rateUsd);
+                this.lastUpdate = now;
+            }
         }
     }
 );
@@ -63,26 +88,27 @@ class Extension {
     constructor(uuid) {
         this.uuid = uuid;
         this.portfolio = [];
-        ExtensionUtils.initTranslations(GETTEXT_DOMAIN);
+        ExtensionUtils.initTranslations(App.metadata['gettext-domain']);
     }
 
     enable() {
         this.indicator = new Indicator();
         Main.panel.addToStatusArea(this.uuid, this.indicator);
 
-        this.settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.cryptokit');
+        this.settings = ExtensionUtils.getSettings(App.metadata['settings-schema']);
         this.settings.connect('changed::precision', this.refreshPrecision.bind(this));
         this.settings.connect('changed::refresh-interval', this.refreshRefreshInterval.bind(this));
         this.settings.connect('changed::portfolio', this.refreshPortfolio.bind(this));
+        this.settings.connect('changed::currency', this.refreshCurrency.bind(this));
 
-
+        this.refreshRefreshInterval();
         this.refreshPortfolio();
         this.refreshPrecision();
-        this.binance = new BinanceWS(
-            this.portfolio.map(([symbol]) => symbol),
-            this.settings.get_string('refresh-interval')
+        this.refreshCurrency();
+        this.coincap = new CoincapAssetWS(
+            this.portfolio.map(([assetId]) => assetId)
         );
-        this.binance.connect('update', (_self, ticks) => this.calculatePortfolioValue(ticks));
+        this.coincap.connect('update', (_self, quotes) => this.calculatePortfolioValue(quotes));
     }
 
     disable() {
@@ -92,12 +118,12 @@ class Extension {
         this.settings?.run_dispose();
         this.settings = null;
 
-        this.binance?.destroy();
-        this.binance = null;
+        this.coincap?.destroy();
+        this.coincap = null;
     }
 
     refreshRefreshInterval() {
-        this.binance.configureRefreshInterval(this.settings.get_string('refresh-interval'));
+        this.indicator?.setRefreshInterval(this.settings.get_string('refresh-interval'));
     }
 
     refreshPrecision() {
@@ -106,15 +132,26 @@ class Extension {
 
     refreshPortfolio() {
         this.portfolio = this.settings.get_value('portfolio').deep_unpack();
-        this.binance?.setSymbols(this.portfolio.map(([symbol]) => symbol));
+        const uniqueAssets = Array.from(new Set(this.portfolio.map(([id]) => id)));
+        this.coincap?.setAssets(uniqueAssets);
     }
 
-    // TODO: Handle cases where the symbol value isn't available.
-    //       We don't want to report an incorrect portfolio value
-    //       Lest we give someone a heart attack.
-    calculatePortfolioValue(ticks) {
+    async refreshCurrency() {
+        const currencyId = this.settings.get_string('currency');
+        const rates = await fetchRates();
+        const rate = rates[currencyId];
+        if (rate)
+            this.indicator?.setRate(rate);
+    }
+
+
+    calculatePortfolioValue(quotes) {
+        if (this.portfolio.length === 0 || Object.values(quotes).includes(null)) {
+            this.indicator?.setValue(null);
+            return;
+        }
         const value = this.portfolio.reduce(
-            (acc, [symbol, qty]) => acc + (ticks[`${symbol.toUpperCase()}USDT`]?.close * qty),
+            (acc, [asset, qty]) => acc + (quotes[asset] * qty),
             0.0
         );
         this.indicator?.setValue(value);

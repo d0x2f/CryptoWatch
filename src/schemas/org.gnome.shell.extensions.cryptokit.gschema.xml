@@ -5,15 +5,19 @@
     path="/org/gnome/shell/extensions/cryptokit/">
 
     <key name="portfolio" type="a(sd)">
-      <default>[("BTC",0.00221),("ETH",1.185)]</default>
+      <default>[("bitcoin",0.01 ),("ethereum",1)]</default>
     </key>
 
     <key name="refresh-interval" type="s">
-      <default>"1000"</default>
+      <default>"0"</default>
     </key>
 
     <key name="precision" type="i">
       <default>0</default>
+    </key>
+
+    <key name="currency" type="s">
+      <default>"united-states-dollar"</default>
     </key>
 
   </schema>
