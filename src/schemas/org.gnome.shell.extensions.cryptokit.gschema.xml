@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<schemalist gettext-domain="cryptokit">
+<schemalist gettext-domain="cryptowatch">
   <schema
-    id="org.gnome.shell.extensions.cryptokit"
-    path="/org/gnome/shell/extensions/cryptokit/">
+    id="org.gnome.shell.extensions.cryptowatch"
+    path="/org/gnome/shell/extensions/cryptowatch/">
 
     <key name="portfolio" type="a(sd)">
       <default>[("bitcoin",0.01 ),("ethereum",1)]</default>

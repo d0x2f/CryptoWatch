@@ -1,10 +1,10 @@
 {
-  "name": "Crypto Kit",
+  "name": "CryptoWatch",
   "description": "Display live crypto portfolio balances.",
-  "uuid": "cryptokit@d0x2f.github.com",
-  "settings-schema": "org.gnome.shell.extensions.cryptokit",
-  "gettext-domain": "cryptokit",
-  "extension-id": "cryptokit",
+  "uuid": "cryptowatch@d0x2f.github.com",
+  "settings-schema": "org.gnome.shell.extensions.cryptowatch",
+  "gettext-domain": "cryptowatch",
+  "extension-id": "cryptowatch",
   "shell-version": [
     "41"
   ],

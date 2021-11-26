@@ -41,4 +41,4 @@ logs:
 
 .PHONY: view-data
 view-data:
-	dconf-editor /org/gnome/shell/extensions/cryptokit/
+	dconf-editor /org/gnome/shell/extensions/cryptowatch/

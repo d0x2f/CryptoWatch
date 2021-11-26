@@ -61,7 +61,7 @@ var PortfolioRow = GObject.registerClass(
           const currencyFormatter = new Intl.NumberFormat(
               undefined,
               {
-                  minimumFractionDigits: 0,
+                  minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
                   style: 'currency',
                   currency: normaliseCurrencySymbol(rate.symbol),
