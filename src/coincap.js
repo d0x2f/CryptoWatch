@@ -84,7 +84,7 @@ var CoincapAssetWS = class CoincapAssetWS {
                     this.ws.connect('closed', () => log('Websocket disconnected'));
                     this.ws.connect('message', this.processMessage.bind(this));
                 } catch (e) {
-                    logError(e); // TODO: Handle error
+                    logError(e);
                 }
             }
         );
