@@ -42,6 +42,7 @@ var PortfolioRow = GObject.registerClass(
       update([id, qty]) {
           this.id = id;
           this.qty = qty;
+          this.asset = this.assets[this.id];
           this.populateLabels();
       }
 

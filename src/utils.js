@@ -7,7 +7,7 @@ const {GLib, Soup} = imports.gi;
  * Takes a string and trims/pads it to 3 characters.
  * This is used to prepare a symbol for use with Intl.NumberFormat.
  *
- * @param symbol A currency symbol to normalise.
+ * @param {string} symbol A currency symbol to normalise.
  */
 function normaliseCurrencySymbol(symbol) {
     return symbol.substr(0, 3).padEnd(3, 'X');
@@ -33,7 +33,7 @@ function packPortfolio(portfolio) {
 
 /**
  * @param {Closure} func Function to run.
- * @param {number} delay Time in miliseconds to wait before running the function.
+ * @param {number} delay Time in milliseconds to wait before running the function.
  * @param {...any} args Arguments to pass to the function.
  */
 function setTimeout(func, delay, ...args) {
