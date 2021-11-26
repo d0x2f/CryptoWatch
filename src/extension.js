@@ -107,7 +107,8 @@ class Extension {
         this.refreshCurrency();
 
         this.coincap = new CoincapAssetWS(
-            this.portfolio.map(([assetId]) => assetId)
+            this.portfolio.map(([assetId]) => assetId),
+            this.settings.get_string('coincap-api-key')
         );
         this.coincap.connect('update', (_self, quotes) => this.calculatePortfolioValue(quotes));
     }
@@ -139,7 +140,7 @@ class Extension {
 
     async refreshCurrency() {
         const currencyId = this.settings.get_string('currency');
-        const rates = await fetchRates();
+        const rates = await fetchRates(this.settings.get_string('coincap-api-key'));
         const rate = rates[currencyId];
         if (rate)
             this.indicator?.setRate(rate);

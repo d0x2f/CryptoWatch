@@ -14,12 +14,14 @@ let _assets, _rates;
 /**
  * Fetch a list of all assets from coincap.
  * Fetched in a singleton pattern.
+ *
+ * @param {string?} apiKey A coincap api key.
  */
-async function fetchAssets() {
+async function fetchAssets(apiKey) {
     if (_assets)
         return _assets;
 
-    const response = await jsonRequest('https://api.coincap.io/v2/assets');
+    const response = await jsonRequest('https://api.coincap.io/v2/assets', apiKey);
     _assets = Object.fromEntries(response.data.sort((a, b) => a.rank >= b.rank).map(a => [a.id, a]));
 
     return _assets;
@@ -28,12 +30,14 @@ async function fetchAssets() {
 /**
  * Fetch a list of all assets from coincap.
  * Fetched in a singleton pattern.
+ *
+ * @param {string?} apiKey A coincap api key.
  */
-async function fetchRates() {
+async function fetchRates(apiKey) {
     if (_rates)
         return _rates;
 
-    const response = await jsonRequest('https://api.coincap.io/v2/rates');
+    const response = await jsonRequest('https://api.coincap.io/v2/rates', apiKey);
     _rates = Object.fromEntries(response.data.sort((a, b) => a.symbol >= b.symbol).map(r => [r.id, r]));
 
     return _rates;
@@ -43,14 +47,14 @@ async function fetchRates() {
  * An object representing a websocket connection that emits signals whenever there's a price update.
  */
 var CoincapAssetWS = class CoincapAssetWS {
-    constructor(assets) {
+    constructor(assets, apiKey) {
         if (assets.length === 0)
             throw new Error('Attempted to create a websocket that watches no assets.');
 
         this.assets = assets;
         this.latestQuotes = Object.fromEntries(this.assets.map(a => [a, null]));
 
-        fetchAssets().then(quotes => {
+        fetchAssets(apiKey).then(quotes => {
             this.latestQuotes = Object.fromEntries(Object.entries(quotes).map(([id, q]) => [id, q.priceUsd]));
             this.emit('update', this.latestQuotes);
         });

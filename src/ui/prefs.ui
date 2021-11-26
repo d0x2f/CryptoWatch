@@ -1,212 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
-  <object class="GtkBox" id="top_box">
+  <!-- <object class="GtkScrolledWindow" id="top_box">
     <property name="visible">True</property>
-    <child>
-      <object class="GtkBox" id="loading_box">
+    <property name="can-focus">True</property>
+    <property name="height-request">600</property>
+    <child> -->
+      <object class="GtkBox" id="top_box">
         <property name="visible">True</property>
-        <property name="hexpand">True</property>
-        <property name="valign">center</property>
-        <property name="orientation">vertical</property>
-        <property name="spacing">20</property>
-        <child>
-          <object class="GtkLabel">
-            <property name="hexpand">True</property>
-            <property name="xalign">0.5</property>
-            <property name="label" translatable="yes">Loading...</property>
-            <attributes>
-              <attribute name="weight" value="bold" />
-            </attributes>
-          </object>
-        </child>
-        <child>
-          <object class="GtkLabel">
-            <property name="halign">center</property>
-            <property name="vexpand">True</property>
-            <property name="xalign">0.5</property>
-            <property name="label" translatable="yes">Please wait while available asset and exchange rate data is fetched from coincap.io.</property>
-          </object>
-        </child>
-      </object>
-    </child>
-    <child>
-      <object class="GtkBox" id="prefs_box">
-        <property name="visible">False</property>
-        <property name="can-focus">True</property>
-        <property name="halign">center</property>
-        <property name="orientation">vertical</property>
-        <property name="margin-start">20</property>
-        <property name="margin-end">20</property>
+        <property name="orientation">horizontal</property>
         <property name="margin-top">20</property>
         <property name="margin-bottom">20</property>
-        <property name="spacing">20</property>
+        <property name="margin-start">0</property>
+        <property name="margin-end">0</property>
         <property name="width-request">450</property>
         <child>
-          <object class="GtkBox">
+          <object class="GtkBox" id="loading_box">
             <property name="visible">True</property>
-            <property name="can-focus">True</property>
-            <child>
-              <object class="GtkBox">
-                <property name="visible">True</property>
-                <property name="can-focus">False</property>
-                <property name="orientation">vertical</property>
-                <child>
-                  <object class="GtkLabel">
-                    <property name="visible">True</property>
-                    <property name="can-focus">False</property>
-                    <property name="label" translatable="yes">Refresh Interval</property>
-                    <property name="hexpand">True</property>
-                    <property name="xalign">0</property>
-                    <attributes>
-                      <attribute name="weight" value="bold" />
-                    </attributes>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkLabel">
-                    <property name="visible">True</property>
-                    <property name="can-focus">False</property>
-                    <property name="label" translatable="yes">The time between portfolio value updates.</property>
-                    <property name="hexpand">True</property>
-                    <property name="xalign">0</property>
-                    <attributes>
-                      <attribute name="weight" value="light" />
-                    </attributes>
-                  </object>
-                </child>
-              </object>
-            </child>
-            <child>
-              <object class="GtkComboBoxText" id="refresh_interval_input">
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="active-id">1000</property>
-                <property name="width-request">150</property>
-                <items>
-                  <item id="0">Live</item>
-                  <item id="1000">1 Second</item>
-                  <item id="2000">2 Seconds</item>
-                  <item id="5000">5 Seconds</item>
-                  <item id="10000">10 Seconds</item>
-                  <item id="30000">30 Seconds</item>
-                  <item id="60000">1 Minute</item>
-                  <item id="600000">10 Minutes</item>
-                </items>
-              </object>
-            </child>
-          </object>
-        </child>
-        <child>
-          <object class="GtkBox">
-            <property name="visible">True</property>
-            <property name="can-focus">True</property>
-            <child>
-              <object class="GtkBox">
-                <property name="visible">True</property>
-                <property name="can-focus">False</property>
-                <property name="orientation">vertical</property>
-                <child>
-                  <object class="GtkLabel">
-                    <property name="visible">True</property>
-                    <property name="can-focus">False</property>
-                    <property name="label" translatable="yes">Decimal Precision</property>
-                    <property name="hexpand">True</property>
-                    <property name="xalign">0</property>
-                    <attributes>
-                      <attribute name="weight" value="bold" />
-                    </attributes>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkLabel">
-                    <property name="visible">True</property>
-                    <property name="can-focus">False</property>
-                    <property name="label" translatable="yes">How many decimal places to display.</property>
-                    <property name="hexpand">True</property>
-                    <property name="xalign">0</property>
-                    <attributes>
-                      <attribute name="weight" value="light" />
-                    </attributes>
-                  </object>
-                </child>
-              </object>
-            </child>
-            <child>
-              <object class="GtkSpinButton" id="precision_input">
-                <property name="width-request">150</property>
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="editable">True</property>
-                <property name="numeric">True</property>
-                <property name="update-policy">if-valid</property>
-                <property name="value">0</property>
-                <property name="digits">0</property>
-                <property name="climb-rate">1</property>
-                <property name="adjustment">precision_adjustment</property>
-              </object>
-            </child>
-          </object>
-        </child>
-        <child>
-          <object class="GtkBox">
-            <property name="visible">True</property>
-            <property name="can-focus">True</property>
-            <child>
-              <object class="GtkBox">
-                <property name="visible">True</property>
-                <property name="can-focus">False</property>
-                <property name="orientation">vertical</property>
-                <child>
-                  <object class="GtkLabel">
-                    <property name="visible">True</property>
-                    <property name="can-focus">False</property>
-                    <property name="label" translatable="yes">Currency</property>
-                    <property name="hexpand">True</property>
-                    <property name="xalign">0</property>
-                    <attributes>
-                      <attribute name="weight" value="bold" />
-                    </attributes>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkLabel">
-                    <property name="visible">True</property>
-                    <property name="can-focus">False</property>
-                    <property name="label" translatable="yes">The currency used to display the portfolio value.</property>
-                    <property name="hexpand">True</property>
-                    <property name="xalign">0</property>
-                    <attributes>
-                      <attribute name="weight" value="light" />
-                    </attributes>
-                  </object>
-                </child>
-              </object>
-            </child>
-            <child>
-              <object class="GtkDropDown" id="currency_input">
-                <property name="width-request">150</property>
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="enable-search">True</property>
-                <property name="expression">
-                  <lookup name="label" type="CurrencyRow"></lookup>
-                </property>
-              </object>
-            </child>
-          </object>
-        </child>
-        <child>
-          <object class="GtkBox">
-            <property name="visible">True</property>
-            <property name="can-focus">False</property>
+            <property name="hexpand">True</property>
+            <property name="valign">center</property>
             <property name="orientation">vertical</property>
+            <property name="spacing">20</property>
             <child>
               <object class="GtkLabel">
-                <property name="visible">True</property>
-                <property name="can-focus">False</property>
-                <property name="label" translatable="yes">Portfolio</property>
                 <property name="hexpand">True</property>
-                <property name="xalign">0</property>
+                <property name="xalign">0.5</property>
+                <property name="label" translatable="yes">Loading...</property>
                 <attributes>
                   <attribute name="weight" value="bold" />
                 </attributes>
@@ -214,55 +32,376 @@
             </child>
             <child>
               <object class="GtkLabel">
-                <property name="visible">True</property>
-                <property name="can-focus">False</property>
-                <property name="label" translatable="yes">Add and remove assets from your portfolio below.</property>
-                <property name="hexpand">True</property>
-                <property name="xalign">0</property>
-                <attributes>
-                  <attribute name="weight" value="light" />
-                </attributes>
+                <property name="halign">center</property>
+                <property name="vexpand">True</property>
+                <property name="xalign">0.5</property>
+                <property name="label" translatable="yes">Please wait while available asset and exchange rate data is fetched from coincap.io.</property>
               </object>
             </child>
           </object>
         </child>
         <child>
-          <object class="GtkBox">
-            <property name="visible">True</property>
+          <object class="GtkBox" id="prefs_box">
+            <property name="visible">False</property>
             <property name="can-focus">True</property>
+            <property name="halign">center</property>
             <property name="orientation">vertical</property>
+            <property name="spacing">20</property>
             <child>
-              <object class="GtkListBox" id="portfolio_list">
+              <object class="GtkBox">
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
-                <property name="show-separators">True</property>
-                <property name="hexpand">True</property>
-              </object>
-            </child>
-            <child>
-              <object class="GtkButton" id="add_asset_button">
-                <property name="margin-top">20</property>
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="hexpand">False</property>
-                <property name="halign">end</property>
                 <child>
                   <object class="GtkBox">
                     <property name="visible">True</property>
-                    <property name="can-focus">True</property>
-                    <property name="orientation">horizontal</property>
+                    <property name="can-focus">False</property>
+                    <property name="orientation">vertical</property>
                     <child>
-                      <object class="GtkImage">
+                      <object class="GtkLabel">
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
-                        <property name="icon-name">list-add</property>
+                        <property name="label" translatable="yes">Refresh Interval</property>
+                        <property name="hexpand">True</property>
+                        <property name="xalign">0</property>
+                        <attributes>
+                          <attribute name="weight" value="bold" />
+                        </attributes>
                       </object>
                     </child>
                     <child>
                       <object class="GtkLabel">
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
-                        <property name="label" translatable="yes">Add</property>
+                        <property name="label" translatable="yes">The time between portfolio value updates.</property>
+                        <property name="hexpand">True</property>
+                        <property name="xalign">0</property>
+                        <attributes>
+                          <attribute name="weight" value="light" />
+                        </attributes>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkComboBoxText" id="refresh_interval_input">
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="active-id">1000</property>
+                    <property name="width-request">150</property>
+                    <items>
+                      <item id="0">Live</item>
+                      <item id="1000">1 Second</item>
+                      <item id="2000">2 Seconds</item>
+                      <item id="5000">5 Seconds</item>
+                      <item id="10000">10 Seconds</item>
+                      <item id="30000">30 Seconds</item>
+                      <item id="60000">1 Minute</item>
+                      <item id="600000">10 Minutes</item>
+                    </items>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="GtkBox">
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <child>
+                  <object class="GtkBox">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="orientation">vertical</property>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="label" translatable="yes">Decimal Precision</property>
+                        <property name="hexpand">True</property>
+                        <property name="xalign">0</property>
+                        <attributes>
+                          <attribute name="weight" value="bold" />
+                        </attributes>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="label" translatable="yes">How many decimal places to display.</property>
+                        <property name="hexpand">True</property>
+                        <property name="xalign">0</property>
+                        <attributes>
+                          <attribute name="weight" value="light" />
+                        </attributes>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkSpinButton" id="precision_input">
+                    <property name="width-request">150</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="editable">True</property>
+                    <property name="numeric">True</property>
+                    <property name="update-policy">if-valid</property>
+                    <property name="value">0</property>
+                    <property name="digits">0</property>
+                    <property name="climb-rate">1</property>
+                    <property name="adjustment">precision_adjustment</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="GtkBox">
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <child>
+                  <object class="GtkBox">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="orientation">vertical</property>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="label" translatable="yes">Currency</property>
+                        <property name="hexpand">True</property>
+                        <property name="xalign">0</property>
+                        <attributes>
+                          <attribute name="weight" value="bold" />
+                        </attributes>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="label" translatable="yes">The currency used to display the portfolio value.</property>
+                        <property name="hexpand">True</property>
+                        <property name="xalign">0</property>
+                        <attributes>
+                          <attribute name="weight" value="light" />
+                        </attributes>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkDropDown" id="currency_input">
+                    <property name="width-request">150</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="enable-search">True</property>
+                    <property name="expression">
+                      <lookup name="label" type="CurrencyRow"></lookup>
+                    </property>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="GtkBox">
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <child>
+                  <object class="GtkBox">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="orientation">vertical</property>
+                    <property name="spacing">5</property>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="label" translatable="yes">API Key (Optional)</property>
+                        <property name="hexpand">True</property>
+                        <property name="xalign">0</property>
+                        <attributes>
+                          <attribute name="weight" value="bold" />
+                        </attributes>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="label" translatable="yes">This extension sources it's data from coincap.io using it's public API. Normally the rate limits imposed on the public API are sufficient, but if you'd like to register for an API key you can do so here:
+&lt;a href="https://coincap.io/api-key"&gt;https://coincap.io/api-key&lt;/a&gt;.</property>
+                        <property name="wrap">True</property>
+                        <property name="hexpand">True</property>
+                        <property name="use-markup">True</property>
+                        <property name="max-width-chars">40</property>
+                        <property name="xalign">0</property>
+                        <attributes>
+                          <attribute name="weight" value="light" />
+                        </attributes>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkBox">
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="vexpand">False</property>
+                    <property name="valign">center</property>
+                    <property name="orientation">vertical</property>
+                    <child>
+                      <object class="GtkButton" id="key_button">
+                        <property name="visible">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="width-request">150</property>
+                        <child>
+                          <object class="GtkBox">
+                            <property name="visible">True</property>
+                            <property name="can-focus">True</property>
+                            <property name="orientation">horizontal</property>
+                            <property name="spacing">5</property>
+                            <property name="halign">center</property>
+                            <property name="hexpand">False</property>
+                            <child>
+                              <object class="GtkImage">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="icon-name">dialog-password</property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkLabel">
+                                <property name="visible">True</property>
+                                <property name="can-focus">True</property>
+                                <property name="label" translatable="yes">Set Key</property>
+                                <property name="hexpand">True</property>
+                                <property name="xalign">0.5</property>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="GtkBox">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="orientation">vertical</property>
+                <child>
+                  <object class="GtkLabel">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="label" translatable="yes">Portfolio</property>
+                    <property name="hexpand">True</property>
+                    <property name="xalign">0</property>
+                    <attributes>
+                      <attribute name="weight" value="bold" />
+                    </attributes>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkLabel">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="label" translatable="yes">Add and remove assets from your portfolio below.</property>
+                    <property name="hexpand">True</property>
+                    <property name="xalign">0</property>
+                    <attributes>
+                      <attribute name="weight" value="light" />
+                    </attributes>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="GtkBox">
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="orientation">vertical</property>
+                <property name="spacing">10</property>
+                <child>
+                  <object class="GtkBox">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="orientation">horizontal</property>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="label" translatable="yes">Token</property>
+                        <property name="hexpand">True</property>
+                        <property name="xalign">0.5</property>
+                        <property name="width-request">150</property>
+                        <attributes>
+                          <attribute name="weight" value="bold" />
+                        </attributes>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="label" translatable="yes">Unit Price</property>
+                        <property name="hexpand">True</property>
+                        <property name="xalign">0.5</property>
+                        <property name="width-request">150</property>
+                        <attributes>
+                          <attribute name="weight" value="bold" />
+                        </attributes>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="label" translatable="yes">Holdings</property>
+                        <property name="hexpand">True</property>
+                        <property name="xalign">0.5</property>
+                        <property name="width-request">150</property>
+                        <attributes>
+                          <attribute name="weight" value="bold" />
+                        </attributes>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkListBox" id="portfolio_list">
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="show-separators">True</property>
+                    <property name="hexpand">True</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkButton" id="add_asset_button">
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="hexpand">False</property>
+                    <property name="halign">end</property>
+                    <child>
+                      <object class="GtkBox">
+                        <property name="visible">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="orientation">horizontal</property>
+                        <property name="spacing">5</property>
+                        <child>
+                          <object class="GtkImage">
+                            <property name="visible">True</property>
+                            <property name="can-focus">False</property>
+                            <property name="icon-name">list-add</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkLabel">
+                            <property name="visible">True</property>
+                            <property name="can-focus">False</property>
+                            <property name="label" translatable="yes">Add</property>
+                          </object>
+                        </child>
                       </object>
                     </child>
                   </object>
@@ -272,8 +411,8 @@
           </object>
         </child>
       </object>
-    </child>
-  </object>
+    <!-- </child>
+  </object> -->
   <object class="GtkAdjustment" id="precision_adjustment">
     <property name="lower">0</property>
     <property name="upper">9</property>

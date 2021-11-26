@@ -55,6 +55,23 @@ function addAsset(assets) {
 }
 
 /**
+ *
+ */
+function showKeyModal() {
+    const builder = Gtk.Builder.new_from_file(`${App.path}/ui/key_modal.ui`);
+    const window = builder.get_object('window');
+    const keyBuffer = builder.get_object('key_buffer');
+    const key = settings.get_string('coincap-api-key');
+    keyBuffer.set_text(key, key.length);
+    builder.get_object('save_button').connect('clicked', () => {
+        settings.set_string('coincap-api-key', keyBuffer.get_text());
+        window.close();
+        window.destroy();
+    });
+    window.show();
+}
+
+/**
  * Create the preferences window.
  */
 function buildPrefsWidget() {
@@ -62,8 +79,8 @@ function buildPrefsWidget() {
 
     portfolioStore = new Gio.ListStore();
     currencyStore = new Gio.ListStore();
-    assetsPromise = fetchAssets();
-    ratePromise = fetchRates();
+    assetsPromise = fetchAssets(settings.get_string('coincap-api-key'));
+    ratePromise = fetchRates(settings.get_string('coincap-api-key'));
 
     const builder = Gtk.Builder.new_from_file(`${App.path}/ui/prefs.ui`);
 
@@ -95,6 +112,9 @@ function buildPrefsWidget() {
         const row = portfolioStore.get_item(index);
         row.activated();
     });
+
+    const setKeyButton = builder.get_object('key_button');
+    setKeyButton.connect('clicked', showKeyModal);
 
     const addAssetButton = builder.get_object('add_asset_button');
 

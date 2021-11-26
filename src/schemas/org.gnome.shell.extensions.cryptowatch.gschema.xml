@@ -20,5 +20,9 @@
       <default>"united-states-dollar"</default>
     </key>
 
+    <key name="coincap-api-key" type="s">
+      <default>""</default>
+    </key>
+
   </schema>
 </schemalist>

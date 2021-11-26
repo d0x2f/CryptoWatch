@@ -69,15 +69,20 @@ class HttpError extends Error {
 }
 
 /**
- * @param {string} url Url to request
+ * @param {string} url Url to request.
+ * @param {string} bearerToken A bearer token.
  */
-async function jsonRequest(url) {
+async function jsonRequest(url, bearerToken) {
     try {
         const session = new Soup.Session();
         const message = new Soup.Message({
             method: 'GET',
             uri: Soup.URI.new(url),
         });
+
+        if (bearerToken && bearerToken !== '')
+            message['request-headers'].append('Authorization', `bearer ${bearerToken}`);
+
         do {
             session.send_message(message);
             if (message.status_code === 429) {
