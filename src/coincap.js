@@ -1,7 +1,7 @@
 /* exported fetchAssets, fetchRates, CoincapAssetWS */
 
 imports.gi.versions.Soup = '2.4';
-const {Soup} = imports.gi;
+const {Soup, GLib} = imports.gi;
 const Signals = imports.signals;
 const ExtensionUtils = imports.misc.extensionUtils;
 
@@ -53,6 +53,8 @@ var CoincapAssetWS = class CoincapAssetWS {
 
         this.assets = assets;
         this.latestQuotes = Object.fromEntries(this.assets.map(a => [a, null]));
+        this.reconnectTimeoutHandle = null;
+        this.destroyed = false;
 
         fetchAssets(apiKey).then(quotes => {
             this.latestQuotes = Object.fromEntries(Object.entries(quotes).map(([id, q]) => [id, q.priceUsd]));
@@ -62,12 +64,18 @@ var CoincapAssetWS = class CoincapAssetWS {
         this.reconnectSocket();
     }
 
+    clearTimeouts() {
+        if (this.reconnectTimeoutHandle) {
+            GLib.Source.remove(this.reconnectTimeoutHandle);
+            this.reconnectTimeoutHandle = null;
+        }
+    }
+
     reconnectSocket() {
         _log(`Connecting socket to watch assets: ${this.assets.join(',')}`);
 
         if (this.ws?.get_state() === Soup.WebsocketState.OPEN)
-            this.ws.close(0, '');
-
+            this.ws.close(Soup.WebsocketCloseCode.NORMAL, '');
 
         const session = new Soup.Session();
         const message = new Soup.Message({
@@ -98,8 +106,16 @@ var CoincapAssetWS = class CoincapAssetWS {
      *  Wait 5 seconds, if the socket is still closed, then try to reconnect.
      */
     handleDisconnect() {
+        // Don't reconnect if the object has been destroyed.
+        if (this.destroyed)
+            return;
+
         _log('Socket disconnected, waiting 5 seconds before retrying socket.');
-        setTimeout(
+
+        // Clear any previous timeouts
+        this.clearTimeouts();
+
+        this.reconnectTimeoutHandle = setTimeout(
             () => {
                 if (this.ws?.get_state() === Soup.WebsocketState.OPEN) {
                     _log('Socket connected, no need to reconnect.');
@@ -113,8 +129,12 @@ var CoincapAssetWS = class CoincapAssetWS {
     }
 
     destroy() {
+        this.destroyed = true;
+
+        this.clearTimeouts();
+
         if (this.ws?.get_state() === Soup.WebsocketState.OPEN)
-            this.ws.close(0, '');
+            this.ws.close(Soup.WebsocketCloseCode.NORMAL, '');
 
         this.ws = null;
     }
