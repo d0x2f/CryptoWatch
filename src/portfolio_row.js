@@ -8,8 +8,6 @@ const {normaliseCurrencySymbol} = App.imports.utils;
 const {USD_RATE} = App.imports.globals;
 const {buildModifyAssetModal} = App.imports.modify_asset_modal;
 
-const settings = getSettings(App.metadata['settings-schema']);
-
 var PortfolioRow = GObject.registerClass(
   class PortfolioRow extends GObject.Object {
       _init(index, [id, qty], assets, rates) {
@@ -21,7 +19,9 @@ var PortfolioRow = GObject.registerClass(
           this.assets = assets;
           this.asset = this.assets[this.id];
 
-          const currencyId = settings.get_string('currency');
+          this.settings = getSettings(App.metadata['settings-schema']);
+
+          const currencyId = this.settings.get_string('currency');
           this.rates = rates;
           this.rate = this.rates[currencyId];
 
@@ -48,7 +48,7 @@ var PortfolioRow = GObject.registerClass(
 
       buildRow() {
           this.builder = Gtk.Builder.new_from_file(`${App.path}/ui/portfolio_row.ui`);
-          settings.connect('changed::currency', this.populateLabels.bind(this));
+          this.settings.connect('changed::currency', this.populateLabels.bind(this));
           this.populateLabels();
           return this.builder.get_object('row');
       }
@@ -57,7 +57,7 @@ var PortfolioRow = GObject.registerClass(
           if (!this.builder)
               return;
 
-          const currencyId = settings.get_string('currency');
+          const currencyId = this.settings.get_string('currency');
           const rate = this.rates[currencyId] ?? USD_RATE;
           const currencyFormatter = new Intl.NumberFormat(
               undefined,
