@@ -21,7 +21,7 @@ async function fetchAssets(apiKey) {
     if (_assets)
         return _assets;
 
-    const response = await jsonRequest('https://api.coincap.io/v2/assets', apiKey);
+    const response = await jsonRequest('https://api.coincap.io/v2/assets?limit=2000', apiKey);
     _assets = Object.fromEntries(response.data.sort((a, b) => a.rank >= b.rank).map(a => [a.id, a]));
 
     return _assets;
@@ -57,7 +57,11 @@ var CoincapAssetWS = class CoincapAssetWS {
         this.destroyed = false;
 
         fetchAssets(apiKey).then(quotes => {
-            this.latestQuotes = Object.fromEntries(Object.entries(quotes).map(([id, q]) => [id, q.priceUsd]));
+            this.latestQuotes = Object.fromEntries(
+                Object.entries(quotes)
+                    .filter(([id]) => assets.includes(id))
+                    .map(([id, q]) => [id, q.priceUsd])
+            );
             this.emit('update', this.latestQuotes);
         });
 

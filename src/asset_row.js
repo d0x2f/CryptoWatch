@@ -19,7 +19,7 @@ var AssetRow = GObject.registerClass(
         _init(asset) {
             super._init();
             this.asset = asset;
-            this.label = asset.symbol;
+            this.label = `${asset.symbol} - ${asset.name}`;
         }
     }
 );
