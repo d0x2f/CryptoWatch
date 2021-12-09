@@ -7,7 +7,7 @@ const ExtensionUtils = imports.misc.extensionUtils;
 
 const App = ExtensionUtils.getCurrentExtension();
 
-const {jsonRequest, setTimeout, _log} = App.imports.utils;
+const {jsonRequest, setTimeout, _log, byteArrayToString} = App.imports.utils;
 
 let _assets, _rates;
 
@@ -44,6 +44,18 @@ async function fetchRates(apiKey) {
 }
 
 /**
+ * @param {Array} needles An array of assets to filter by.
+ * @param {Object} haystack A map of assets from the coincap api.
+ */
+function filterAssets(needles, haystack) {
+    return Object.fromEntries(
+        Object.entries(haystack)
+            .filter(([id]) => needles.includes(id))
+            .map(([id, q]) => [id, q.priceUsd])
+    );
+}
+
+/**
  * An object representing a websocket connection that emits signals whenever there's a price update.
  */
 var CoincapAssetWS = class CoincapAssetWS {
@@ -57,11 +69,7 @@ var CoincapAssetWS = class CoincapAssetWS {
         this.destroyed = false;
 
         fetchAssets(apiKey).then(quotes => {
-            this.latestQuotes = Object.fromEntries(
-                Object.entries(quotes)
-                    .filter(([id]) => assets.includes(id))
-                    .map(([id, q]) => [id, q.priceUsd])
-            );
+            this.latestQuotes = filterAssets(assets, quotes);
             this.emit('update', this.latestQuotes);
         });
 
@@ -144,13 +152,19 @@ var CoincapAssetWS = class CoincapAssetWS {
     }
 
     processMessage(_self, _type, message) {
-        const data = JSON.parse(new TextDecoder().decode(message.get_data()));
+        const data = JSON.parse(byteArrayToString(message.get_data()));
         Object.assign(this.latestQuotes, data);
         this.emit('update', this.latestQuotes);
     }
 
-    setAssets(assets) {
+    setAssets(assets, apiKey = null) {
         this.assets = assets;
+        fetchAssets(apiKey).then(quotes => {
+            this.latestQuotes = Object.assign(
+                filterAssets(assets, quotes),
+                this.latestQuotes
+            );
+        });
         this.reconnectSocket();
     }
 };

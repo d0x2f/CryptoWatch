@@ -1,8 +1,9 @@
-/* exported packPortfolio, setTimeout, sleep, jsonRequest, normaliseCurrencySymbol, _log */
+/* exported packPortfolio, setTimeout, sleep, jsonRequest, normaliseCurrencySymbol, _log, byteArrayToString */
 
 imports.gi.versions.Soup = '2.4';
 const {GLib, Soup} = imports.gi;
 const ExtensionUtils = imports.misc.extensionUtils;
+const byteArray = imports.byteArray;
 
 const App = ExtensionUtils.getCurrentExtension();
 
@@ -98,4 +99,17 @@ async function jsonRequest(url, bearerToken) {
     } catch (err) {
         logError(err);
     }
+}
+
+/**
+ * Converts a byte array into a string.
+ *
+ * @param {Array} array A byte array
+ */
+function byteArrayToString(array) {
+    // Only available in gnome-shell 41+
+    if (TextDecoder)
+        return new TextDecoder().decode(array);
+
+    return byteArray.toString(array);
 }
