@@ -107,9 +107,11 @@ async function jsonRequest(url, bearerToken) {
  * @param {Array} array A byte array
  */
 function byteArrayToString(array) {
-    // Only available in gnome-shell 41+
-    if (TextDecoder)
+    try {
+        // Only available in gnome-shell 41+
         return new TextDecoder().decode(array);
-
-    return byteArray.toString(array);
+    } catch {
+        // Fallback
+        return byteArray.toString(array);
+    }
 }
