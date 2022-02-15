@@ -6,13 +6,15 @@ const ExtensionUtils = imports.misc.extensionUtils;
 const Main = imports.ui.main;
 const PanelMenu = imports.ui.panelMenu;
 const PopupMenu = imports.ui.popupMenu;
+const Gettext = imports.gettext;
 
 const App = ExtensionUtils.getCurrentExtension();
 const {CoincapAssetWS, fetchRates} = App.imports.coincap;
 const {normaliseCurrencySymbol} = App.imports.utils;
 const {USD_RATE} = App.imports.globals;
 
-const _ = ExtensionUtils.gettext;
+const Domain = Gettext.domain(App.metadata['gettext-domain']);
+const _ = Domain.gettext;
 
 const Indicator = GObject.registerClass(
     class Indicator extends PanelMenu.Button {

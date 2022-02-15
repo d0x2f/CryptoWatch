@@ -1,7 +1,7 @@
 /* exported init, buildPrefsWidget */
 
 const {Gtk, Gio} = imports.gi;
-const {gettext: _, initTranslations, getCurrentExtension, getSettings} = imports.misc.extensionUtils;
+const {initTranslations, getCurrentExtension, getSettings} = imports.misc.extensionUtils;
 
 const App = getCurrentExtension();
 const {PortfolioRow} = App.imports.portfolio_row;
