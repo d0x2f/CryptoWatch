@@ -69,6 +69,7 @@ function showKeyModal() {
         window.destroy();
     });
     window.show();
+    window.set_modal(true);
 }
 
 /**

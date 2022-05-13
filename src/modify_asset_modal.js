@@ -48,4 +48,5 @@ function buildModifyAssetModal(row, assets) {
     });
 
     window.show();
+    window.set_modal(true);
 }

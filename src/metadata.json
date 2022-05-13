@@ -8,7 +8,8 @@
   "extension-id": "cryptowatch",
   "shell-version": [
     "40",
-    "41"
+    "41",
+    "42"
   ],
-  "version": 7
+  "version": 9
 }
